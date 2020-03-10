@@ -1,0 +1,30 @@
+- name: OBTAIN SESSION COOKIE WITH URI MODULE
+  hosts: all 
+  connection: local 
+  gather_facts: no 
+
+  tasks: 
+    - name: GET COOKIE WITH POST 
+      uri: 
+        url: "https://{{ inventory_hostname }}/j_security_check" 
+        method: POST 
+        body: 
+          j_username: "{{ username }}" 
+          j_password: "{{ password }}" 
+        body_format: form-urlencoded 
+        return_content: yes 
+        validate_certs: no 
+      register: login_data  
+
+    - name: PRINT SESSION COOKIE 
+      debug: 
+        var: login_data.set_cookie
+    - name: ASSIGN THE SESSION COOKIE TO A VARIABLE
+      set_fact: 
+        vmanage_cookie: "{{ login_data.set_cookie }}"
+    - name: VIEW THE COOKIE
+      debug: 
+        var: vmanage_cookie
+    - name: PAUSE FOR VIEWING THE COOKIE 
+      pause: 
+        seconds: 3
